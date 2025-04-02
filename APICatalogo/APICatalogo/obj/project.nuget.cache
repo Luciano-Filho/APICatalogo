@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "qtTxmuL1+RE=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Luciano\\Documents\\APIs\\Desenvolvimento\\APICatalogo\\APICatalogo\\APICatalogo.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Luciano\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.1\\microsoft.aspnetcore.openapi.9.0.1.nupkg.sha512",
+    "C:\\Users\\Luciano\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512",
+    "C:\\Users\\Luciano\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\8.1.0\\swashbuckle.aspnetcore.swaggerui.8.1.0.nupkg.sha512"
+  ],
+  "logs": []
+}
