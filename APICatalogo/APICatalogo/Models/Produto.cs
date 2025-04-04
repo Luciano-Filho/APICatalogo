@@ -22,4 +22,5 @@ public class Produto
     public string? ImagemUrl { get; set; }
     public float Estoque { get; set; }
     public DateTime DataCadastro { get; set; }
+    public int CategoriaId { get; set; }
 }
