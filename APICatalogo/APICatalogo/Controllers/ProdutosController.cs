@@ -16,18 +16,27 @@ public class ProdutosController : ControllerBase
         _context = context;
     }
     [HttpGet]
-    public ActionResult<IEnumerable<Produto>> Get()
+    public async Task<ActionResult<IEnumerable<Produto>>> Get()
     {
-        var produtos = _context.Produtos.ToList();
-        if (produtos is null)
-            return NotFound("Produtos não encontrados...");
-        return produtos;
+        try
+        {
+            var produtos = await _context.Produtos.AsNoTracking().ToListAsync();
+            if (produtos is null)
+                return NotFound("Produtos não encontrados...");
+            return Ok(produtos);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                $"Ocorreu um erro na requisição: {ex.Message}");
+        }
+
     }
 
     [HttpGet("{id:int}", Name= "ObterProdutoPorId")]
-    public ActionResult<Produto> Get(int id)
+    public async Task <ActionResult<Produto>> Get(int id)
     {
-        var produto = _context.Produtos.Find(id);
+        var produto = await _context.Produtos.FindAsync(id);
         if (produto is null) return NotFound("Produto não encontrado...");
         return produto;
     }

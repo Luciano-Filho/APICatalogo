@@ -16,20 +16,20 @@ public class CategoriasController : ControllerBase
         _context = context;
     }
     [HttpGet("produtos")]
-    public ActionResult<IEnumerable<Categoria>> GetGategoriaProduto()
+    public async Task <ActionResult<IEnumerable<Categoria>>> GetGategoriaProduto()
     {
-        return _context.Categorias.Include(p=> p.Produtos).ToList();
+        return await _context.Categorias.Include(p=> p.Produtos).AsNoTracking().ToListAsync();
     }
     [HttpGet]
     public ActionResult<IEnumerable<Categoria>> GetAll()
     {
-        return _context.Categorias.ToList();
+        return _context.Categorias.AsNoTracking().ToList();
     }
 
     [HttpGet("{id:int}", Name = "CategoriaPorId")]
-    public ActionResult<Categoria> Get(int id)
+    public async Task <ActionResult<Categoria>> Get(int id)
     {
-        var categoria = _context.Categorias.Find(id);
+        var categoria = await _context.Categorias.FindAsync(id);
         if (categoria is null)
             return NotFound("Categoria não encontrada...");
         return Ok(categoria);
