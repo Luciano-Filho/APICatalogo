@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Reflection.Metadata;
+using APICatalogo.Validation;
 
 namespace APICatalogo.Models;
 
@@ -10,6 +11,7 @@ public class Produto
     public int Id { get; set; }
     [Required]
     [StringLength(80)]
+    [PrimeiraLetraMaiuscula]
     public string? Nome { get; set; }
     [Required]
     [StringLength(300)]
