@@ -1,4 +1,5 @@
-﻿using APICatalogo.Context;
+﻿using System.Text;
+using APICatalogo.Context;
 using APICatalogo.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +12,7 @@ namespace APICatalogo.Controllers;
 public class CategoriasController : ControllerBase
 {
     private readonly AppDbContext _context;
+    string caminhoLog = "C:\\Users\\Luciano\\Documents\\APIs\\Desenvolvimento\\Logs";
     public CategoriasController(AppDbContext context)
     {
         _context = context;
@@ -23,6 +25,9 @@ public class CategoriasController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<Categoria>> GetAll()
     {
+        StreamWriter log = new StreamWriter(caminhoLog+"/Categorias.txt",true);
+        log.WriteLine("Acessando todas as categorias");
+        log.Close();
         return _context.Categorias.AsNoTracking().ToList();
     }
 
