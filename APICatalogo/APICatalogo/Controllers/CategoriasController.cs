@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using APICatalogo.Context;
 using APICatalogo.Models;
+using APICatalogo.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,30 +12,32 @@ namespace APICatalogo.Controllers;
 [ApiController]
 public class CategoriasController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly ICategoriaRepository _Repository;
     string caminhoLog = "C:\\Users\\Luciano\\Documents\\APIs\\Desenvolvimento\\Logs";
-    public CategoriasController(AppDbContext context)
+    public CategoriasController(ICategoriaRepository Repository)
     {
-        _context = context;
+        _Repository = Repository;
     }
-    [HttpGet("produtos")]
-    public async Task <ActionResult<IEnumerable<Categoria>>> GetGategoriaProduto()
+    
+    /*[HttpGet("produtos")]
+    public ActionResult<IEnumerable<Categoria>> GetGategoriaProduto()
     {
-        return await _context.Categorias.Include(p=> p.Produtos).AsNoTracking().ToListAsync();
-    }
+        StreamWriter log = new StreamWriter(caminhoLog + "/Categorias.txt", true);
+        log.Write("Imprimindo todas as categorias");
+        var categorias = _Repository.GetAll();
+        return Ok(categorias);
+    }*/
     [HttpGet]
     public ActionResult<IEnumerable<Categoria>> GetAll()
     {
-        StreamWriter log = new StreamWriter(caminhoLog+"/Categorias.txt",true);
-        log.WriteLine("Acessando todas as categorias");
-        log.Close();
-        return _context.Categorias.AsNoTracking().ToList();
+        var categorias = _Repository.GetAll();
+        return Ok(categorias);
     }
 
     [HttpGet("{id:int}", Name = "CategoriaPorId")]
-    public async Task <ActionResult<Categoria>> Get(int id)
+    public ActionResult<Categoria> Get(int id)
     {
-        var categoria = await _context.Categorias.FindAsync(id);
+        var categoria = _Repository.Get(id);
         if (categoria is null)
             return NotFound("Categoria não encontrada...");
         return Ok(categoria);
@@ -42,9 +45,8 @@ public class CategoriasController : ControllerBase
     [HttpPost]
     public ActionResult Post(Categoria categoria)
     {
-        _context.Categorias.Add(categoria);
-        _context.SaveChanges();
-        return new CreatedAtRouteResult("CategoriaPorId", new { id = categoria.Id }, categoria);
+        var categoriaCriada = _Repository.Create(categoria);
+        return new CreatedAtRouteResult("CategoriaPorId", new { id = categoriaCriada.Id }, categoriaCriada);
     }
     [HttpPut("{id:int}")]
     public ActionResult Put(int id, Categoria categoria)
@@ -52,19 +54,17 @@ public class CategoriasController : ControllerBase
         if (id != categoria.Id)
             return BadRequest("O id informado deve ser o mesmo id da categoria");
 
-        _context.Entry(categoria).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-        _context.SaveChanges();
-        return Ok(categoria);
+        var categoriaAtualizada = _Repository.Update(categoria);
+        return Ok(categoriaAtualizada);
     }
 
     [HttpDelete("{id:int}")]
     public ActionResult Delete(int id)
     {
-        var categoria = _context.Categorias.Find(id);
+        var categoria = _Repository.Get(id);
         if (categoria is null)
             return NotFound("Categoria não encontrada...");
-        _context.Categorias.Remove(categoria);
-        _context.SaveChanges();
+        _Repository.Delete(id);
         return Ok(categoria);
     }
 

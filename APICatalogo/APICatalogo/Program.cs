@@ -1,11 +1,13 @@
 
 using APICatalogo.Context;
+using APICatalogo.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();//v1.json
+builder.Services.AddScoped<ICategoriaRepository,CategoriaRepository>();
 
 string connectionString = builder.Configuration.GetConnectionString("defaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
