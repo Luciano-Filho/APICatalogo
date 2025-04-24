@@ -19,18 +19,12 @@ public class CategoriasController : ControllerBase
         _Repository = Repository;
     }
     
-    /*[HttpGet("produtos")]
-    public ActionResult<IEnumerable<Categoria>> GetGategoriaProduto()
-    {
-        StreamWriter log = new StreamWriter(caminhoLog + "/Categorias.txt", true);
-        log.Write("Imprimindo todas as categorias");
-        var categorias = _Repository.GetAll();
-        return Ok(categorias);
-    }*/
     [HttpGet]
     public ActionResult<IEnumerable<Categoria>> GetAll()
     {
         var categorias = _Repository.GetAll();
+        if (!categorias.Any())
+            return NotFound();
         return Ok(categorias);
     }
 
@@ -53,9 +47,12 @@ public class CategoriasController : ControllerBase
     {
         if (id != categoria.Id)
             return BadRequest("O id informado deve ser o mesmo id da categoria");
+        //var categoriaExistente = _Repository.Get(id);
+        //if (categoriaExistente is null)
+          //  return NotFound("Não há categoria para o id informado");
 
-        var categoriaAtualizada = _Repository.Update(categoria);
-        return Ok(categoriaAtualizada);
+        _Repository.Update(categoria);
+        return Ok(categoria);
     }
 
     [HttpDelete("{id:int}")]
