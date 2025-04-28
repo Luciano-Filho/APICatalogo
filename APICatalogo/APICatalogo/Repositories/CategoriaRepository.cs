@@ -1,5 +1,6 @@
 ﻿using APICatalogo.Context;
 using APICatalogo.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Repositories;
@@ -23,11 +24,17 @@ public class CategoriaRepository : ICategoriaRepository
     {
         _context.Add(categoria);
         _context.SaveChanges();
-        return categoria;
+        return categoria; 
     }
     public Categoria Update(Categoria categoria)
     {
-        _context.Entry(categoria).State = EntityState.Modified;
+        var categoriaExistente = _context.Categorias.Find(categoria.Id);
+        Console.WriteLine("CatExistnte " + categoriaExistente.Nome);
+        if (categoriaExistente == null)
+        {
+            throw new KeyNotFoundException("Categoria não encontrada.");
+        }
+        _context.Entry(categoriaExistente).CurrentValues.SetValues(categoria);
         _context.SaveChanges();
         return categoria;
     }

@@ -54,7 +54,7 @@ public class ProdutosController : ControllerBase
 
         if(_repository.Update(produto))
             return Ok(produto);
-        return BadRequest("Produto não atualizado");
+        return BadRequest("Produto não encontrado");
     }
     [HttpDelete("{id:int}")]
     public ActionResult Delete(int id)

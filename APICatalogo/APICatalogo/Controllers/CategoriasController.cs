@@ -47,9 +47,9 @@ public class CategoriasController : ControllerBase
     {
         if (id != categoria.Id)
             return BadRequest("O id informado deve ser o mesmo id da categoria");
-        //var categoriaExistente = _Repository.Get(id);
-        //if (categoriaExistente is null)
-          //  return NotFound("Não há categoria para o id informado");
+        var categoriaExistente = _Repository.Get(id);
+        if (categoriaExistente is null)
+            return NotFound("Não há categoria para o id informado");
 
         _Repository.Update(categoria);
         return Ok(categoria);
