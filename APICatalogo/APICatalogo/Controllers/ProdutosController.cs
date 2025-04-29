@@ -11,17 +11,17 @@ namespace APICatalogo.Controllers;
 [ApiController]
 public class ProdutosController : ControllerBase
 {
-    private readonly IProdutoRepository _repository;
-    public ProdutosController(IProdutoRepository repository)
+    private readonly IUnitOfWork _iof;
+    public ProdutosController(IUnitOfWork iof)
     {
-        _repository = repository;
+        _iof = iof;
     }
     [HttpGet]
     public ActionResult<IEnumerable<Produto>> Get()
     {
         try
         {
-            var produtos = _repository.GetAll();
+            var produtos = _iof.ProdutoRepository.GetAll();
             if (!produtos.Any())
                 return NoContent();
             return Ok(produtos);
@@ -36,14 +36,15 @@ public class ProdutosController : ControllerBase
     [HttpGet("{id:int}", Name= "ObterProdutoPorId")]
     public ActionResult<Produto> Get(int id)
     {
-        var produto = _repository.Get(id);
+        var produto = _iof.ProdutoRepository.Get(id);
         if (produto is null) return NotFound("Produto não encontrado...");
         return produto;
     }
     [HttpPost]
     public ActionResult Post(Produto produto)
     {
-        var produtoCriado = _repository.Create(produto);
+        var produtoCriado = _iof.ProdutoRepository.Create(produto);
+        _iof.Commit();
         return new CreatedAtRouteResult("ObterProdutoPorId",new {id = produtoCriado.Id}, produtoCriado);
     }
     [HttpPut("{id:int}")]
@@ -52,17 +53,19 @@ public class ProdutosController : ControllerBase
         if (id != produto.Id)
             return BadRequest("O id informado deve ser igual ao id do produto a ser atualizado");
 
-        if(_repository.Update(produto))
+        if(_iof.ProdutoRepository.Update(produto))
+            _iof.Commit();
             return Ok(produto);
         return BadRequest("Produto não encontrado");
     }
     [HttpDelete("{id:int}")]
     public ActionResult Delete(int id)
     {
-        var produto = _repository.Get(id);
+        var produto = _iof.ProdutoRepository.Get(id);
         if (produto is null) return NotFound("Produto não encontrado...");
 
-        if(_repository.Delete(produto))
+        if (_iof.ProdutoRepository.Delete(produto))
+            _iof.Commit();
             return Ok(produto);
         return BadRequest("Produto não deletado");
     }

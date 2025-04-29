@@ -14,7 +14,7 @@ public class CategoriaRepository : ICategoriaRepository
     }
     public IEnumerable<Categoria> GetAll()
     {
-        return _context.Categorias.ToList();
+        return _context.Categorias.AsNoTracking().ToList();
     }
     public Categoria Get(int id)
     {
@@ -23,26 +23,22 @@ public class CategoriaRepository : ICategoriaRepository
     public Categoria Create(Categoria categoria)
     {
         _context.Add(categoria);
-        _context.SaveChanges();
         return categoria; 
     }
     public Categoria Update(Categoria categoria)
     {
         var categoriaExistente = _context.Categorias.Find(categoria.Id);
-        Console.WriteLine("CatExistnte " + categoriaExistente.Nome);
         if (categoriaExistente == null)
         {
             throw new KeyNotFoundException("Categoria não encontrada.");
         }
         _context.Entry(categoriaExistente).CurrentValues.SetValues(categoria);
-        _context.SaveChanges();
         return categoria;
     }
     public Categoria Delete(int id)
     {
         var categoria = _context.Categorias.Find(id);
         _context.Categorias.Remove(categoria);
-        _context.SaveChanges();
         return categoria;
     }
 }

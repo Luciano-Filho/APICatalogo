@@ -12,17 +12,17 @@ namespace APICatalogo.Controllers;
 [ApiController]
 public class CategoriasController : ControllerBase
 {
-    private readonly ICategoriaRepository _Repository;
+    private readonly IUnitOfWork _iof;
     string caminhoLog = "C:\\Users\\Luciano\\Documents\\APIs\\Desenvolvimento\\Logs";
-    public CategoriasController(ICategoriaRepository Repository)
+    public CategoriasController(IUnitOfWork iof)
     {
-        _Repository = Repository;
+        _iof = iof;
     }
     
     [HttpGet]
     public ActionResult<IEnumerable<Categoria>> GetAll()
     {
-        var categorias = _Repository.GetAll();
+        var categorias = _iof.CategoriaRepository.GetAll();
         if (!categorias.Any())
             return NotFound();
         return Ok(categorias);
@@ -31,7 +31,7 @@ public class CategoriasController : ControllerBase
     [HttpGet("{id:int}", Name = "CategoriaPorId")]
     public ActionResult<Categoria> Get(int id)
     {
-        var categoria = _Repository.Get(id);
+        var categoria = _iof.CategoriaRepository.Get(id);
         if (categoria is null)
             return NotFound("Categoria não encontrada...");
         return Ok(categoria);
@@ -39,7 +39,8 @@ public class CategoriasController : ControllerBase
     [HttpPost]
     public ActionResult Post(Categoria categoria)
     {
-        var categoriaCriada = _Repository.Create(categoria);
+        var categoriaCriada = _iof.CategoriaRepository.Create(categoria);
+        _iof.Commit();
         return new CreatedAtRouteResult("CategoriaPorId", new { id = categoriaCriada.Id }, categoriaCriada);
     }
     [HttpPut("{id:int}")]
@@ -47,21 +48,23 @@ public class CategoriasController : ControllerBase
     {
         if (id != categoria.Id)
             return BadRequest("O id informado deve ser o mesmo id da categoria");
-        var categoriaExistente = _Repository.Get(id);
+        var categoriaExistente = _iof.CategoriaRepository.Get(id);
         if (categoriaExistente is null)
             return NotFound("Não há categoria para o id informado");
 
-        _Repository.Update(categoria);
+        _iof.CategoriaRepository.Update(categoria);
+        _iof.Commit();
         return Ok(categoria);
     }
 
     [HttpDelete("{id:int}")]
     public ActionResult Delete(int id)
     {
-        var categoria = _Repository.Get(id);
+        var categoria = _iof.CategoriaRepository.Get(id);
         if (categoria is null)
             return NotFound("Categoria não encontrada...");
-        _Repository.Delete(id);
+        _iof.CategoriaRepository.Delete(id);
+        _iof.Commit();
         return Ok(categoria);
     }
 

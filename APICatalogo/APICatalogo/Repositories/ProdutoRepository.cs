@@ -1,5 +1,6 @@
 ﻿using APICatalogo.Context;
 using APICatalogo.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Repositories;
 
@@ -14,7 +15,7 @@ public class ProdutoRepository : IProdutoRepository
 
     public IEnumerable<Produto> GetAll()
     {
-        return _context.Produtos.ToList();
+        return _context.Produtos.AsNoTracking().ToList();
     }
     public Produto Get(int id)
     {
@@ -23,7 +24,6 @@ public class ProdutoRepository : IProdutoRepository
     public Produto Create(Produto produto)
     {
         _context.Produtos.Add(produto);
-        _context.SaveChanges();
         return produto;
     }
     public bool Update(Produto produto)
@@ -31,7 +31,6 @@ public class ProdutoRepository : IProdutoRepository
         if (_context.Produtos.Any(p => p.Id == produto.Id))
         {
             _context.Produtos.Update(produto);
-            _context.SaveChanges();
             return true;
         }
         return false;
@@ -41,7 +40,6 @@ public class ProdutoRepository : IProdutoRepository
         if (_context.Produtos.Any(p => p.Id == produto.Id))
         {
             _context.Produtos.Remove(produto);
-            _context.SaveChanges();
             return true;
         }
         return false;
