@@ -1,5 +1,6 @@
 
 using APICatalogo.Context;
+using APICatalogo.Models.DTOs.Mappings;
 using APICatalogo.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,7 @@ builder.Services.AddOpenApi();//v1.json
 builder.Services.AddScoped<ICategoriaRepository,CategoriaRepository>();
 builder.Services.AddScoped<IProdutoRepository,ProdutoRepository>();
 builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
+builder.Services.AddAutoMapper(typeof(ProdutoDtoMappingProfile));
 
 string connectionString = builder.Configuration.GetConnectionString("defaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));

@@ -1,7 +1,9 @@
 ﻿using System.Text;
 using APICatalogo.Context;
 using APICatalogo.Models;
+using APICatalogo.Models.DTOs;
 using APICatalogo.Repositories;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,48 +15,63 @@ namespace APICatalogo.Controllers;
 public class CategoriasController : ControllerBase
 {
     private readonly IUnitOfWork _iof;
-    string caminhoLog = "C:\\Users\\Luciano\\Documents\\APIs\\Desenvolvimento\\Logs";
-    public CategoriasController(IUnitOfWork iof)
+    //string caminhoLog = "C:\\Users\\Luciano\\Documents\\APIs\\Desenvolvimento\\Logs";
+    private readonly IMapper _mapper;
+    public CategoriasController(IUnitOfWork iof, IMapper mapper)
     {
         _iof = iof;
+        _mapper = mapper;
     }
     
     [HttpGet]
-    public ActionResult<IEnumerable<Categoria>> GetAll()
+    public ActionResult<IEnumerable<CategoriaDTO>> GetAll()
     {
         var categorias = _iof.CategoriaRepository.GetAll();
         if (!categorias.Any())
             return NotFound();
-        return Ok(categorias);
+
+        var categoriasDTO = _mapper.Map<IEnumerable<CategoriaDTO>>(categorias);
+
+        return Ok(categoriasDTO);
     }
 
     [HttpGet("{id:int}", Name = "CategoriaPorId")]
-    public ActionResult<Categoria> Get(int id)
+    public ActionResult<CategoriaDTO> Get(int id)
     {
         var categoria = _iof.CategoriaRepository.Get(id);
         if (categoria is null)
             return NotFound("Categoria não encontrada...");
-        return Ok(categoria);
+
+        var categoriaDTO = _mapper.Map<CategoriaDTO>(categoria);
+
+        return Ok(categoriaDTO);
     }
     [HttpPost]
-    public ActionResult Post(Categoria categoria)
+    public ActionResult<CategoriaDTO> Post(CategoriaDTO categoriaDto)
     {
+        var categoria = _mapper.Map<Categoria>(categoriaDto);
         var categoriaCriada = _iof.CategoriaRepository.Create(categoria);
         _iof.Commit();
-        return new CreatedAtRouteResult("CategoriaPorId", new { id = categoriaCriada.Id }, categoriaCriada);
+        var novaCategoriaDTO = _mapper.Map<CategoriaDTO>(categoriaCriada);
+        return new CreatedAtRouteResult("CategoriaPorId", new { id = novaCategoriaDTO.Id }, novaCategoriaDTO);
     }
     [HttpPut("{id:int}")]
-    public ActionResult Put(int id, Categoria categoria)
+    public ActionResult<CategoriaDTO> Put(int id, CategoriaDTO categoriaDto)
     {
-        if (id != categoria.Id)
+        if (id != categoriaDto.Id)
             return BadRequest("O id informado deve ser o mesmo id da categoria");
-        var categoriaExistente = _iof.CategoriaRepository.Get(id);
-        if (categoriaExistente is null)
+
+        var categoria = _iof.CategoriaRepository.Get(id);
+        if (categoria is null)
             return NotFound("Não há categoria para o id informado");
 
-        _iof.CategoriaRepository.Update(categoria);
+        _mapper.Map(categoriaDto, categoria);
+        var categoriaAtualiza = _iof.CategoriaRepository.Update(categoria);
         _iof.Commit();
-        return Ok(categoria);
+
+        var categoriaDtoAtualizada = _mapper.Map<CategoriaDTO>(categoriaAtualiza);
+
+        return Ok(categoriaDtoAtualizada);
     }
 
     [HttpDelete("{id:int}")]
