@@ -171,3 +171,7 @@ C:\Users\Luciano\Documents\APIs\Desenvolvimento\APICatalogo\APICatalogo\bin\Debu
 C:\Users\Luciano\Documents\APIs\Desenvolvimento\APICatalogo\APICatalogo\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
 C:\Users\Luciano\Documents\APIs\Desenvolvimento\APICatalogo\APICatalogo\bin\Debug\net9.0\AutoMapper.dll
 C:\Users\Luciano\Documents\APIs\Desenvolvimento\APICatalogo\APICatalogo\bin\Debug\net9.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\Luciano\Documents\APIs\Desenvolvimento\APICatalogo\APICatalogo\bin\Debug\net9.0\Microsoft.AspNetCore.JsonPatch.dll
+C:\Users\Luciano\Documents\APIs\Desenvolvimento\APICatalogo\APICatalogo\bin\Debug\net9.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+C:\Users\Luciano\Documents\APIs\Desenvolvimento\APICatalogo\APICatalogo\bin\Debug\net9.0\Newtonsoft.Json.dll
+C:\Users\Luciano\Documents\APIs\Desenvolvimento\APICatalogo\APICatalogo\bin\Debug\net9.0\Newtonsoft.Json.Bson.dll
