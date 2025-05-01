@@ -12,9 +12,11 @@ public class CategoriaRepository : ICategoriaRepository
     {
         _context = context;
     }
-    public IEnumerable<Categoria> GetAll()
+    public IEnumerable<Categoria> GetAll(int skip, int take)
     {
-        return _context.Categorias.AsNoTracking().ToList();
+        int tamMaximoPagina = 50;
+        take = take > tamMaximoPagina ? tamMaximoPagina : take;
+        return _context.Categorias.AsNoTracking().Skip(skip).Take(take).ToList();
     }
     public Categoria Get(int id)
     {

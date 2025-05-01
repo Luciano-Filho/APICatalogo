@@ -13,9 +13,11 @@ public class ProdutoRepository : IProdutoRepository
         _context = context;
     }
 
-    public IEnumerable<Produto> GetAll()
+    public IEnumerable<Produto> GetAll(int skip, int take)
     {
-        return _context.Produtos.AsNoTracking().ToList();
+        int tamMaximoPagina = 2;
+        take = take > tamMaximoPagina ? tamMaximoPagina : take;
+        return _context.Produtos.AsNoTracking().Skip(skip).Take(take).ToList();
     }
     public Produto Get(int id)
     {

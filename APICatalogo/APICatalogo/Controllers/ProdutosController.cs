@@ -23,11 +23,11 @@ public class ProdutosController : ControllerBase
         _mapper = mapper;
     }
     [HttpGet]
-    public ActionResult<IEnumerable<ProdutoDTO>> Get()
+    public ActionResult<IEnumerable<ProdutoDTO>> Get(int skip, int take)
     {
         try
         {
-            var produtos = _iof.ProdutoRepository.GetAll();
+            var produtos = _iof.ProdutoRepository.GetAll(skip, take);
             if (!produtos.Any())
                 return NoContent();
 

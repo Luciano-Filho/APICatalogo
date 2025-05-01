@@ -24,9 +24,9 @@ public class CategoriasController : ControllerBase
     }
     
     [HttpGet]
-    public ActionResult<IEnumerable<CategoriaDTO>> GetAll()
+    public ActionResult<IEnumerable<CategoriaDTO>> GetAll(int skip, int take)
     {
-        var categorias = _iof.CategoriaRepository.GetAll();
+        var categorias = _iof.CategoriaRepository.GetAll(skip, take);
         if (!categorias.Any())
             return NotFound();
 
