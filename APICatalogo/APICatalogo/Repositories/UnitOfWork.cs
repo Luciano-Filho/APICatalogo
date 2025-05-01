@@ -27,12 +27,12 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
-    public void Commit()
+    public async Task CommitAsync()
     {
-        _context.SaveChanges();
+        _context.SaveChangesAsync();
     }
     public void Dispose()
     {
-        _context.Dispose();
+        _context.DisposeAsync();
     }
 }

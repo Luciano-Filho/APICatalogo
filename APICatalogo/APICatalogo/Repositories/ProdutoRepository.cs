@@ -13,15 +13,15 @@ public class ProdutoRepository : IProdutoRepository
         _context = context;
     }
 
-    public IEnumerable<Produto> GetAll(int skip, int take)
+    public async Task<IEnumerable<Produto>> GetAllAsync(int skip = 0, int take = 10)
     {
-        int tamMaximoPagina = 2;
+        int tamMaximoPagina = 50;
         take = take > tamMaximoPagina ? tamMaximoPagina : take;
-        return _context.Produtos.AsNoTracking().Skip(skip).Take(take).ToList();
+        return await _context.Produtos.AsNoTracking().Skip(skip).Take(take).ToListAsync();
     }
-    public Produto Get(int id)
+    public async Task<Produto> GetAsync(int id)
     {
-        return _context.Produtos.Find(id);
+        return await _context.Produtos.FindAsync(id);
     }
     public Produto Create(Produto produto)
     {

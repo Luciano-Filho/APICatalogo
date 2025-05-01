@@ -4,8 +4,8 @@ namespace APICatalogo.Repositories;
 
 public interface ICategoriaRepository
 {
-    IEnumerable<Categoria> GetAll(int skip, int take);
-    Categoria Get(int id);
+    Task<IEnumerable<Categoria>> GetAllAsync(int skip, int take);
+    Task<Categoria> GetAsync(int id);
     Categoria Create(Categoria categoria);  
     Categoria Update(Categoria categoria);
     Categoria Delete(int id);

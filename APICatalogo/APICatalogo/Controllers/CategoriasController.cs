@@ -4,9 +4,7 @@ using APICatalogo.Models;
 using APICatalogo.Models.DTOs;
 using APICatalogo.Repositories;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Controllers;
 
@@ -24,9 +22,9 @@ public class CategoriasController : ControllerBase
     }
     
     [HttpGet]
-    public ActionResult<IEnumerable<CategoriaDTO>> GetAll(int skip, int take)
+    public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetAllAsync(int skip = 0, int take = 10)
     {
-        var categorias = _iof.CategoriaRepository.GetAll(skip, take);
+        var categorias = await _iof.CategoriaRepository.GetAllAsync(skip, take);
         if (!categorias.Any())
             return NotFound();
 
@@ -36,9 +34,9 @@ public class CategoriasController : ControllerBase
     }
 
     [HttpGet("{id:int}", Name = "CategoriaPorId")]
-    public ActionResult<CategoriaDTO> Get(int id)
+    public async Task<ActionResult<CategoriaDTO>> Get(int id)
     {
-        var categoria = _iof.CategoriaRepository.Get(id);
+        var categoria = await _iof.CategoriaRepository.GetAsync(id);
         if (categoria is null)
             return NotFound("Categoria não encontrada...");
 
@@ -47,27 +45,27 @@ public class CategoriasController : ControllerBase
         return Ok(categoriaDTO);
     }
     [HttpPost]
-    public ActionResult<CategoriaDTO> Post(CategoriaDTO categoriaDto)
+    public async Task<ActionResult<CategoriaDTO>> Post(CategoriaDTO categoriaDto)
     {
         var categoria = _mapper.Map<Categoria>(categoriaDto);
         var categoriaCriada = _iof.CategoriaRepository.Create(categoria);
-        _iof.Commit();
+        await _iof.CommitAsync();
         var novaCategoriaDTO = _mapper.Map<CategoriaDTO>(categoriaCriada);
         return new CreatedAtRouteResult("CategoriaPorId", new { id = novaCategoriaDTO.Id }, novaCategoriaDTO);
     }
     [HttpPut("{id:int}")]
-    public ActionResult<CategoriaDTO> Put(int id, CategoriaDTO categoriaDto)
+    public async Task<ActionResult<CategoriaDTO>> Put(int id, CategoriaDTO categoriaDto)
     {
         if (id != categoriaDto.Id)
             return BadRequest("O id informado deve ser o mesmo id da categoria");
 
-        var categoria = _iof.CategoriaRepository.Get(id);
+        var categoria = await _iof.CategoriaRepository.GetAsync(id);
         if (categoria is null)
             return NotFound("Não há categoria para o id informado");
 
         _mapper.Map(categoriaDto, categoria);
         var categoriaAtualiza = _iof.CategoriaRepository.Update(categoria);
-        _iof.Commit();
+        await _iof.CommitAsync();
 
         var categoriaDtoAtualizada = _mapper.Map<CategoriaDTO>(categoriaAtualiza);
 
@@ -75,14 +73,13 @@ public class CategoriasController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        var categoria = _iof.CategoriaRepository.Get(id);
+        var categoria = await _iof.CategoriaRepository.GetAsync(id);
         if (categoria is null)
             return NotFound("Categoria não encontrada...");
         _iof.CategoriaRepository.Delete(id);
-        _iof.Commit();
+        await _iof.CommitAsync();
         return Ok(categoria);
     }
-
 }

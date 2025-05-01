@@ -12,15 +12,15 @@ public class CategoriaRepository : ICategoriaRepository
     {
         _context = context;
     }
-    public IEnumerable<Categoria> GetAll(int skip, int take)
+    public async Task<IEnumerable<Categoria>> GetAllAsync(int skip, int take)
     {
         int tamMaximoPagina = 50;
         take = take > tamMaximoPagina ? tamMaximoPagina : take;
-        return _context.Categorias.AsNoTracking().Skip(skip).Take(take).ToList();
+        return await _context.Categorias.AsNoTracking().Skip(skip).Take(take).ToListAsync();
     }
-    public Categoria Get(int id)
+    public async Task<Categoria> GetAsync(int id)
     {
-        return _context.Categorias.Find(id);
+        return await _context.Categorias.FindAsync(id);
     }
     public Categoria Create(Categoria categoria)
     {

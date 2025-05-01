@@ -3,11 +3,8 @@ using APICatalogo.Models;
 using APICatalogo.Models.DTOs;
 using APICatalogo.Repositories;
 using AutoMapper;
-using Azure;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Controllers;
 
@@ -23,11 +20,11 @@ public class ProdutosController : ControllerBase
         _mapper = mapper;
     }
     [HttpGet]
-    public ActionResult<IEnumerable<ProdutoDTO>> Get(int skip, int take)
+    public async Task<ActionResult<IEnumerable<ProdutoDTO>>> Get(int skip = 0, int take = 10)
     {
         try
         {
-            var produtos = _iof.ProdutoRepository.GetAll(skip, take);
+            var produtos = await _iof.ProdutoRepository.GetAllAsync(skip, take);
             if (!produtos.Any())
                 return NoContent();
 
@@ -42,32 +39,32 @@ public class ProdutosController : ControllerBase
     }
 
     [HttpGet("{id:int}", Name= "ObterProdutoPorId")]
-    public ActionResult<ProdutoDTO> Get(int id)
+    public async Task<ActionResult<ProdutoDTO>> Get(int id)
     {
-        var produto = _iof.ProdutoRepository.Get(id);
+        var produto = await _iof.ProdutoRepository.GetAsync(id);
         if (produto is null) return NotFound("Produto não encontrado...");
         
         var produtoDto = _mapper.Map<ProdutoDTO>(produto);
         return Ok(produtoDto);
     }
     [HttpPost]
-    public ActionResult<ProdutoDTO> Post(ProdutoDTO produtoDto)
+    public async Task<ActionResult<ProdutoDTO>> Post(ProdutoDTO produtoDto)
     {
         var produto = _mapper.Map<Produto>(produtoDto);
         var produtoCriado = _iof.ProdutoRepository.Create(produto);
-        _iof.Commit();
+        await _iof.CommitAsync();
 
         var novoProdutoDTO = _mapper.Map<ProdutoDTO>(produtoCriado);
         return new CreatedAtRouteResult("ObterProdutoPorId",new {id = novoProdutoDTO.Id}, novoProdutoDTO);
     }
 
     [HttpPatch("{id:int}/updatePartial")]
-    public ActionResult<ProdutoDtoUpdateRequest> Patch (int id, JsonPatchDocument<ProdutoDtoUpdateRequest> prodRequestDTO)
+    public async Task<ActionResult<ProdutoDtoUpdateRequest>> Patch (int id, JsonPatchDocument<ProdutoDtoUpdateRequest> prodRequestDTO)
     {
         if (prodRequestDTO is null || id <= 0)
             return BadRequest("Dados Inválidos");
 
-        var produto = _iof.ProdutoRepository.Get(id);
+        var produto =await _iof.ProdutoRepository.GetAsync(id);
         if (produto is null)
             return NotFound("Produto não encontrado");
 
@@ -79,35 +76,35 @@ public class ProdutosController : ControllerBase
 
         _mapper.Map(produtoRquest, produto);
         _iof.ProdutoRepository.Update(produto);
-        _iof.Commit();
+        await _iof.CommitAsync();
 
         return Ok(_mapper.Map<ProdutoDtoUpdateResponse>(produto));
     }
 
     [HttpPut("{id:int}")]
-    public ActionResult<ProdutoDTO> Put(int id, ProdutoDTO produtoDto)
+    public async Task<ActionResult<ProdutoDTO>> Put(int id, ProdutoDTO produtoDto)
     {
         if (id != produtoDto.Id)
             return BadRequest("O id informado deve ser igual ao id do produto a ser atualizado");
 
-        var produtoExistente = _iof.ProdutoRepository.Get(id); 
+        var produtoExistente = await _iof.ProdutoRepository.GetAsync(id); 
         if (produtoExistente is null)
             return NotFound("Produto não encontrado");
 
         _mapper.Map(produtoDto, produtoExistente);
 
         _iof.ProdutoRepository.Update(produtoExistente);
-        _iof.Commit();
+        await _iof.CommitAsync();
         return Ok(_mapper.Map<ProdutoDTO>(produtoExistente));
     }
     [HttpDelete("{id:int}")]
-    public ActionResult<ProdutoDTO> Delete(int id)
+    public async Task<ActionResult<ProdutoDTO>> Delete(int id)
     {
-        var produto = _iof.ProdutoRepository.Get(id);
+        var produto = await _iof.ProdutoRepository.GetAsync(id);
         if (produto is null) return NotFound("Produto não encontrado...");
 
         _iof.ProdutoRepository.Delete(produto);
-        _iof.Commit();
+        await _iof.CommitAsync();
         return Ok(_mapper.Map<ProdutoDTO>(produto));
     }
 }
