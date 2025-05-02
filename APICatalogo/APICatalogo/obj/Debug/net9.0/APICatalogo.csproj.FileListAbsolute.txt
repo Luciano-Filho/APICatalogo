@@ -175,3 +175,4 @@ C:\Users\Luciano\Documents\APIs\Desenvolvimento\APICatalogo\APICatalogo\bin\Debu
 C:\Users\Luciano\Documents\APIs\Desenvolvimento\APICatalogo\APICatalogo\bin\Debug\net9.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 C:\Users\Luciano\Documents\APIs\Desenvolvimento\APICatalogo\APICatalogo\bin\Debug\net9.0\Newtonsoft.Json.dll
 C:\Users\Luciano\Documents\APIs\Desenvolvimento\APICatalogo\APICatalogo\bin\Debug\net9.0\Newtonsoft.Json.Bson.dll
+C:\Users\Luciano\Documents\APIs\Desenvolvimento\APICatalogo\APICatalogo\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
