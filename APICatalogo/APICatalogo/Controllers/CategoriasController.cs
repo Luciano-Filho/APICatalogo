@@ -23,7 +23,6 @@ public class CategoriasController : ControllerBase
     }
     
     [HttpGet]
-    [Authorize]
     public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetAllAsync(int skip = 0, int take = 10)
     {
         var categorias = await _iof.CategoriaRepository.GetAllAsync(skip, take);
