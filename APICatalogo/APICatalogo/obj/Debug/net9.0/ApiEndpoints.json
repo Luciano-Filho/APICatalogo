@@ -1,5 +1,21 @@
 [
   {
+    "ContainingType": "APICatalogo.Controllers.AuthController",
+    "Method": "login",
+    "RelativePath": "Auth/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "loginModel",
+        "Type": "APICatalogo.Models.DTOs.LoginModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "APICatalogo.Controllers.CategoriasController",
     "Method": "GetAllAsync",
     "RelativePath": "Categorias",
