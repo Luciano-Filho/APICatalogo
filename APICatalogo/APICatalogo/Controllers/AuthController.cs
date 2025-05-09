@@ -3,6 +3,7 @@ using System.Security.Claims;
 using APICatalogo.Models;
 using APICatalogo.Models.DTOs;
 using APICatalogo.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -58,6 +59,7 @@ public class AuthController : ControllerBase
             await _userManager.UpdateAsync(usuario);
 
             //retorna um json
+            Console.Write("Data atual: " + DateTime.Now);
             return Ok(new
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
@@ -66,5 +68,77 @@ public class AuthController : ControllerBase
             });
         }
         return Unauthorized();
+    }
+    [HttpPost]
+    [Route("Registro")]
+    public async Task<ActionResult> RegistrarUsuario(RegisterModel model)
+    {
+        var usuarioExiste = await _userManager.FindByNameAsync(model.UserName!); //exclamação para dizer ao compilador que não é nulo
+        if (usuarioExiste != null)
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                new Response { Status = "Erro", Message = "usuário já existe" });
+
+        ApplicationUser usuario = new()
+        {
+            UserName = model.UserName,
+            Email = model.UserName,
+            SecurityStamp = Guid.NewGuid().ToString(),//para criar um novo guid para o usuario
+        };
+        var resultado = await _userManager.CreateAsync(usuario, model.Password!);
+        if (!resultado.Succeeded)
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                new Response { Status = "Erro", Message = "Falha na criação do usuário" });
+
+        return Ok(new Response { Status="Sucesso", Message="Usuário criado com sucesso"});
+    }
+    [HttpPost]
+    [Route("refresh-token")]
+    public async Task<ActionResult> RefreshToken(TokenModel tokenModel)
+    {
+        if (tokenModel == null)
+            return BadRequest("Requisição inválida");
+
+        string? tokenAcesso = tokenModel.TokenAcesso
+                ?? throw new ArgumentNullException(nameof(tokenModel));
+        string? refreshToken = tokenModel.TokenAtualizado
+                ?? throw new ArgumentNullException(nameof(refreshToken));
+
+        var principal = _tokenService.GetClaimsPrincipalFromExpiredToken(tokenAcesso, _configuration);
+
+        if (principal is null)
+            return BadRequest("token ou refresh token é inválido!");
+
+        var userName = principal.Identity.Name;
+        var usuario = await _userManager.FindByNameAsync(userName!);
+
+        if(usuario == null || usuario.RefreshToken != refreshToken ||
+                                usuario.RefreshTokenExpiryTime <= DateTime.Now)
+            return BadRequest("token ou refresh token é inválido!");
+
+        var novoTokenAcesso = _tokenService.GerarTokenAcesso(principal.Claims.ToList(), _configuration);
+        var novoRefrehToken = _tokenService.AtualizarToken();
+
+        usuario.RefreshToken = novoRefrehToken;
+        
+        await _userManager.UpdateAsync(usuario);
+
+        return new ObjectResult(new
+        {
+            AccessToken = new JwtSecurityTokenHandler().WriteToken(novoTokenAcesso),
+            RefreshToken = novoRefrehToken
+        });
+    }
+    [Authorize]
+    [HttpPost]
+    [Route("revoke/{username}")]
+    public async Task<ActionResult> RevokeToken(string username)
+    {
+        var usuario = await _userManager.FindByNameAsync(username);
+        if (usuario is null) return BadRequest("username é inválido");
+
+        usuario.RefreshToken = null;
+        await _userManager.UpdateAsync(usuario);
+
+        return NoContent();
     }
 }

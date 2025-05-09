@@ -21,7 +21,7 @@ public class CategoriasController : ControllerBase
         _iof = iof;
         _mapper = mapper;
     }
-    
+    [Authorize]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetAllAsync(int skip = 0, int take = 10)
     {
