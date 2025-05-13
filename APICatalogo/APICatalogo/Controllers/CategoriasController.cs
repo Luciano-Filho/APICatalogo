@@ -21,7 +21,7 @@ public class CategoriasController : ControllerBase
         _iof = iof;
         _mapper = mapper;
     }
-    [Authorize]
+    [Authorize(Policy ="UserOnly")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetAllAsync(int skip = 0, int take = 10)
     {
@@ -34,6 +34,7 @@ public class CategoriasController : ControllerBase
         return Ok(categoriasDTO);
     }
 
+    [Authorize(Policy="AdminOnly")]
     [HttpGet("{id:int}", Name = "CategoriaPorId")]
     public async Task<ActionResult<CategoriaDTO>> Get(int id)
     {

@@ -47,7 +47,16 @@ builder.Services.AddAuthentication(options =>
 });
 
 //A ordem importa: UseAuthentication vem antes de UseAuthorization.
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("SuperAdminOnly", policy => policy.RequireRole("Admin").
+                                                RequireClaim("id", "luciano"));
+    options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
+    options.AddPolicy("ExclusivePolicyOnly", policy => policy.RequireAssertion(context =>
+                                      context.User.HasClaim(Claim => Claim.Type == "id" &&
+                                       Claim.Value == "luciano") || context.User.IsInRole("SuperAdmin")));
+});
 
 string connectionString = builder.Configuration.GetConnectionString("defaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));

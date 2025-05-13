@@ -30,6 +30,7 @@ public class AuthController : ControllerBase
         _roleManager = roleManager;
         _configuration = configuration;
     }
+    [Authorize(Policy="SuperAdminOnly")]
     [HttpPost]
     [Route("CreateRole")]
     public async Task<ActionResult> CreateRole(string roleName)
@@ -47,7 +48,7 @@ public class AuthController : ControllerBase
             {
                 return StatusCode(StatusCodes.Status400BadRequest, new Response
                 {
-                    Status = "400",Message = $"Falha na criação da role {roleName}"
+                    Status = "Erro",Message = $"Falha na criação da role {roleName}"
                 });
             }
         }
@@ -93,13 +94,14 @@ public class AuthController : ControllerBase
     public async Task<ActionResult> login(LoginModel loginModel)
     {
         var usuario = await _userManager.FindByNameAsync(loginModel.UserName);
-        if ((usuario is not null && await _userManager.CheckPasswordAsync(usuario,loginModel.Password)))
+        if ((usuario is not null && await _userManager.CheckPasswordAsync(usuario,loginModel.Password!)))
         {
             var roles = await _userManager.GetRolesAsync(usuario);
             var authClaims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name,usuario.UserName),
-                new Claim(ClaimTypes.Email, usuario.Email),
+                new Claim(ClaimTypes.Name,usuario.UserName!),
+                new Claim(ClaimTypes.Email, usuario.Email!),
+                new Claim("id", usuario.UserName!),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
             foreach (var role in roles)
@@ -138,7 +140,7 @@ public class AuthController : ControllerBase
         ApplicationUser usuario = new()
         {
             UserName = model.UserName,
-            Email = model.UserName,
+            Email = model.EmailAddress,
             SecurityStamp = Guid.NewGuid().ToString(),//para criar um novo guid para o usuario
         };
         var resultado = await _userManager.CreateAsync(usuario, model.Password!);
