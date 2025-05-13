@@ -31,6 +31,64 @@ public class AuthController : ControllerBase
         _configuration = configuration;
     }
     [HttpPost]
+    [Route("CreateRole")]
+    public async Task<ActionResult> CreateRole(string roleName)
+    {
+        var roleExiste = await _roleManager.RoleExistsAsync(roleName);
+        if(!roleExiste)
+        {
+            var resultado = await _roleManager.CreateAsync(new IdentityRole(roleName));
+            if (resultado.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status200OK, new Response 
+                { Status = "Sucesso", Message = $"Role {roleName} criada com sucesso" });
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new Response
+                {
+                    Status = "400",Message = $"Falha na criação da role {roleName}"
+                });
+            }
+        }
+        else
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, new Response
+            {
+                Status = "400",
+                Message = $"Role {roleName} já existe"
+            });
+        }
+    }
+    [HttpPost]
+    [Route("AdicionaUserARole")]
+    public async Task<ActionResult> AdicionaUsuarioARole(string email, string role)
+    {
+        var usuario = await _userManager.FindByEmailAsync(email);
+        if(usuario != null)
+        {
+            var resultado = await _userManager.AddToRoleAsync(usuario, role);
+            if(resultado.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status200OK, new Response
+                {
+                    Status = "Sucesso",
+                    Message = $"Usuário {usuario.UserName} adicionado a role {role}"
+                });
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new Response
+                {
+                    Status = "Falha",
+                    Message = $"Ocorreu uma falha ao atribuir o usuario {usuario.UserName} a role {role}"
+                });
+            }
+        }
+        return BadRequest(new { Error = "Usuario não encontrado" });
+    }
+
+    [HttpPost]
     [Route("login")]
     public async Task<ActionResult> login(LoginModel loginModel)
     {
@@ -59,7 +117,6 @@ public class AuthController : ControllerBase
             await _userManager.UpdateAsync(usuario);
 
             //retorna um json
-            Console.Write("Data atual: " + DateTime.Now);
             return Ok(new
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),

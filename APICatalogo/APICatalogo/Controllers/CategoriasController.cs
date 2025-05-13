@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace APICatalogo.Controllers;
 
-[Route("[controller]")]
+[Route("[Controller]")]
 [ApiController]
 public class CategoriasController : ControllerBase
 {

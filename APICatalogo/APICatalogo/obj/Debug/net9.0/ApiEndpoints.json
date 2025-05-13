@@ -1,6 +1,43 @@
 [
   {
     "ContainingType": "APICatalogo.Controllers.AuthController",
+    "Method": "AdicionaUsuarioARole",
+    "RelativePath": "Auth/AdicionaUserARole",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "email",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "role",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "APICatalogo.Controllers.AuthController",
+    "Method": "CreateRole",
+    "RelativePath": "Auth/CreateRole",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roleName",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "APICatalogo.Controllers.AuthController",
     "Method": "login",
     "RelativePath": "Auth/login",
     "HttpMethod": "POST",

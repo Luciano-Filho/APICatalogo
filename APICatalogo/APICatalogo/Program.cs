@@ -5,6 +5,7 @@ using APICatalogo.Models;
 using APICatalogo.Models.DTOs.Mappings;
 using APICatalogo.Repositories;
 using APICatalogo.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -24,22 +25,27 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFramework
 
 var secretKey = builder.Configuration["JWT:SecretKey"] ?? throw new ArgumentException("Chave secreta invalida...");
 
-builder.Services.AddAuthentication("Bearer").AddJwtBearer(options =>
+builder.Services.AddAuthentication(options =>
 {
-    options.TokenValidationParameters = new TokenValidationParameters()
+    options.DefaultAuthenticateScheme = "Bearer";
+    options.DefaultChallengeScheme = "Bearer";
+})
+.AddJwtBearer("Bearer", options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,//Verifica se o token veio de um emissor confiável
-        ValidateAudience = true,//Verifica se o token está sendo usado pela aplicação certa
-        ValidateLifetime = true, //Garante que o token não esteja expirado
-        ValidateIssuerSigningKey = true, //Verifica se o token foi assinado corretamente.
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
         ClockSkew = TimeSpan.Zero,
-        ValidIssuer = builder.Configuration["JWT:ValidIssuer"], //Quem emitiu o token (precisa bater com o que foi usado ao gerar o token)
-        ValidAudience = builder.Configuration["JWT:ValidAudience"],//Para quem o token é válido (normalmente o próprio serviço)
+        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+        ValidAudience = builder.Configuration["JWT:ValidAudience"],
         IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(secretKey))
-
+            Encoding.UTF8.GetBytes(secretKey))
     };
 });
+
 //A ordem importa: UseAuthentication vem antes de UseAuthorization.
 builder.Services.AddAuthorization();
 
@@ -56,9 +62,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization(); 
-app.UseExceptionHandler("/erro"); // ou um middleware customizado
-app.MapControllers();
-
+//app.UseExceptionHandler("/erro"); // ou um middleware customizado
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 app.Run();
