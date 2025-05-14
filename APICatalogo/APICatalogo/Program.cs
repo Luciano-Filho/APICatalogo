@@ -1,5 +1,6 @@
 
 using System.Text;
+using System.Threading.RateLimiting;
 using APICatalogo.Context;
 using APICatalogo.Models;
 using APICatalogo.Models.DTOs.Mappings;
@@ -7,6 +8,7 @@ using APICatalogo.Repositories;
 using APICatalogo.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -58,6 +60,34 @@ builder.Services.AddAuthorization(options =>
                                        Claim.Value == "luciano") || context.User.IsInRole("SuperAdmin")));
 });
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter(policyName: "WindowsLimit", limit =>
+    {
+        limit.PermitLimit = 1; //Quantidade de requisições dentro do tempo estabelecido
+        limit.Window = TimeSpan.FromSeconds(5); //Intervalo de tempo
+        limit.QueueLimit = 0; //Requisições que vão ficar na fila
+    });
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
+
+//Adiconar limite de taxa para toda a aplicação
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpcontext =>
+    RateLimitPartition.GetFixedWindowLimiter(
+                partitionKey: httpcontext.User.Identity?.Name ??
+                                httpcontext.Request.Headers.Host.ToString(),
+                factory: partition => new FixedWindowRateLimiterOptions
+                {
+                    AutoReplenishment = bool.Parse(builder.Configuration["LimitRateValues:AutoReplenishment"]!),
+                    PermitLimit = int.Parse(builder.Configuration["LimitRateValues:PermitLimit"]!),
+                    QueueLimit = int.Parse(builder.Configuration["LimitRateValues:QueueLimit"]!),
+                    Window = TimeSpan.FromSeconds(int.Parse(builder.Configuration["LimitRateValues:Window"]!))
+                }));
+});
+
 string connectionString = builder.Configuration.GetConnectionString("defaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
@@ -74,7 +104,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization(); 
-//app.UseExceptionHandler("/erro"); // ou um middleware customizado
+app.UseRateLimiter();//Deve ser inserido depois do userRouting 
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();

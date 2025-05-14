@@ -6,11 +6,13 @@ using APICatalogo.Repositories;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace APICatalogo.Controllers;
 
 [Route("[Controller]")]
 [ApiController]
+//[EnableRateLimiting("WindowsLimit")]
 public class CategoriasController : ControllerBase
 {
     private readonly IUnitOfWork _iof;
@@ -36,6 +38,7 @@ public class CategoriasController : ControllerBase
 
     [Authorize(Policy="AdminOnly")]
     [HttpGet("{id:int}", Name = "CategoriaPorId")]
+    [DisableRateLimiting]
     public async Task<ActionResult<CategoriaDTO>> Get(int id)
     {
         var categoria = await _iof.CategoriaRepository.GetAsync(id);
