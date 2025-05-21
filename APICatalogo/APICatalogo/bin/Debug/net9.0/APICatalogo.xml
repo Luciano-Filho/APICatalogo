@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>APICatalogo</name>
+    </assembly>
+    <members>
+        <member name="M:APICatalogo.Controllers.CategoriasController.GetAllAsync(System.Int32,System.Int32)">
+            <summary>
+            Obtém uma lista paginada de categorias.
+            </summary>
+            <param name="skip">Número de itens a ignorar (paginação).</param>
+            <param name="take">Número de itens a retornar (paginação).</param>
+            <returns>Uma lista de objetos CategoriaDTO.</returns>
+        </member>
+        <member name="M:APICatalogo.Controllers.CategoriasController.Get(System.Int32)">
+            <summary>
+            Obtém uma categoria específica pelo ID.
+            </summary>
+            <param name="id">ID da categoria.</param>
+            <returns>Objeto CategoriaDTO correspondente ao ID informado.</returns>
+        </member>
+        <member name="M:APICatalogo.Controllers.CategoriasController.Post(APICatalogo.Models.DTOs.CategoriaDTO)">
+            <summary>
+            Cria uma nova categoria.
+            </summary>
+            <param name="categoriaDto">Objeto CategoriaDTO com os dados da nova categoria.</param>
+            <returns>Objeto CategoriaDTO criado.</returns>
+        </member>
+        <member name="M:APICatalogo.Controllers.CategoriasController.Put(System.Int32,APICatalogo.Models.DTOs.CategoriaDTO)">
+            <summary>
+            Atualiza uma categoria existente.
+            </summary>
+            <param name="id">ID da categoria a ser atualizada.</param>
+            <param name="categoriaDto">Objeto CategoriaDTO com os dados atualizados.</param>
+            <returns>Objeto CategoriaDTO atualizado.</returns>
+        </member>
+        <member name="M:APICatalogo.Controllers.CategoriasController.Delete(System.Int32)">
+            <summary>
+            Remove uma categoria pelo ID.
+            </summary>
+            <param name="id">ID da categoria a ser removida.</param>
+            <returns>Status da exclusão.</returns>
+        </member>
+        <member name="T:APICatalogo.Migrations.Inicial">
+            <inheritdoc />
+        </member>
+        <member name="M:APICatalogo.Migrations.Inicial.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:APICatalogo.Migrations.Inicial.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:APICatalogo.Migrations.Inicial.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:APICatalogo.Migrations.Inicial2">
+            <inheritdoc />
+        </member>
+        <member name="M:APICatalogo.Migrations.Inicial2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:APICatalogo.Migrations.Inicial2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:APICatalogo.Migrations.Inicial2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:APICatalogo.Migrations.AdicionandoPerfisUsuario">
+            <inheritdoc />
+        </member>
+        <member name="M:APICatalogo.Migrations.AdicionandoPerfisUsuario.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:APICatalogo.Migrations.AdicionandoPerfisUsuario.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:APICatalogo.Migrations.AdicionandoPerfisUsuario.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:APICatalogo.Migrations.AdicionandoCamposTabelUsurario">
+            <inheritdoc />
+        </member>
+        <member name="M:APICatalogo.Migrations.AdicionandoCamposTabelUsurario.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:APICatalogo.Migrations.AdicionandoCamposTabelUsurario.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:APICatalogo.Migrations.AdicionandoCamposTabelUsurario.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>
